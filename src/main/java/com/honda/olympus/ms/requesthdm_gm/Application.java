@@ -6,8 +6,10 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
+@EnableScheduling
 @SpringBootApplication
 public class Application 
 {
@@ -21,5 +23,5 @@ public class Application
 	public void init() {
 		TimeZone.setDefault( TimeZone.getTimeZone("America/Mexico_City") );
 	}
-
+	
 }
