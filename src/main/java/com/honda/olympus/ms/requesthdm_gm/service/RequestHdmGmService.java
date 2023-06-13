@@ -77,7 +77,7 @@ public class RequestHdmGmService
 				log.debug(">>> updating fixed order");
 				afeService.updateFixedOrder(fixedOrder);
 				
-				log.debug("# fixed order processed: {}", fixedOrder);
+				log.info("RequestHdmGm:: fixed order processed: {}", fixedOrder);
 			}
 		}
 		
