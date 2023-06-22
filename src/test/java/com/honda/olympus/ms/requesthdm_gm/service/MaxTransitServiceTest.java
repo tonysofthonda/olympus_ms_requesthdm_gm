@@ -38,8 +38,6 @@ public class MaxTransitServiceTest
 		service.setServiceName("ms.requesthdm_gm");
 		
 		props = new Properties();
-		props.setUrlmax("http://localhost:8099/maxtransit");
-		
 		jsonMaxTransit = new JsonMaxTransit();
 	}
 	
@@ -51,6 +49,7 @@ public class MaxTransitServiceTest
 		// event handler
 		MaxTransitEventHandler handler = spy(new MaxTransitEventHandler());
 		handler.setService(service);
+		props.setUrlmax("http://localhost:8099/maxtransit");
 		handler.setProps(props);
 		
 		// translator client
@@ -78,6 +77,7 @@ public class MaxTransitServiceTest
 		// event handler
 		MaxTransitEventHandler handler = spy(new MaxTransitEventHandler());
 		handler.setService(service);
+		props.setUrlmax("http://54.193.217.196:8099/maxtransit");
 		handler.setProps(props);
 		
 		// translator client

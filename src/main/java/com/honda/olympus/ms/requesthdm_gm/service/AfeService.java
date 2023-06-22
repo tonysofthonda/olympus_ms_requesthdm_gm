@@ -50,6 +50,7 @@ public class AfeService
 	public AfeModelColor findModelColor(AfeFixedOrder fixedOrder) {
 		try {
 			AfeModelColor afeModelColor = afeRepository.findModelColor(fixedOrder);
+
 			if (afeModelColor == null) {
 				logEvent( eventHandler.findModelColorError(fixedOrder) );
 			}
