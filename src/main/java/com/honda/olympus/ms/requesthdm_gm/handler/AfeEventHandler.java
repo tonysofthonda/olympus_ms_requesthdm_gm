@@ -18,7 +18,7 @@ public class AfeEventHandler
 {
 	
 	private static final String MSG_DB_CONNECTION_ERROR = "No es posible conectarse a la base de datos %s, %s, %s, %s"; 
-	private static final String MSG_MODEL_COLOR_ERROR = "NO existe el model_color_id %s en la tabla AFE_MODEL_COLOR con el query 2 (%s)";
+	private static final String MSG_MODEL_COLOR_ERROR = "NO existe el model_color_id %s en la tabla AFE_MODEL_COLOR con el query (%s)";
 	private static final String MSG_COLOR_ERROR = "NO existe el color_id %s en la tabla AFE_COLOR con el query 3 (%s)";
 	private static final String MSG_MODEL_ERROR = "NO existe el model_id %s en la tabla AFE_MODEL con el query 4 (%s)";
 	private static final String MSG_MODEL_TYPE_ERROR = "NO existe el MODEL_TYPE_ID %s en la tabla AFE_MODEL_TYPE con el query 5 (%s)";
