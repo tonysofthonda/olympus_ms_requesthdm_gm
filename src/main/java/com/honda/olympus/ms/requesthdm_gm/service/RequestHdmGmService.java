@@ -47,22 +47,26 @@ public class RequestHdmGmService {
             if (modelType == null) continue;
 
             JsonMTOC jsonMTOC = new JsonMTOC(model.getCode(), modelType.getModelType(), "", color.getCode());
-            log.info("Request JsonMTOC: {}", jsonMTOC.toJson());
+            log.info("Requesthdm:: Request MTOC: {}", jsonMTOC.toJson());
             String translatorRes = translatorService.sendRequest(jsonMTOC);
 
             if (!StringUtils.hasText(translatorRes)) continue;
 
-            // TODO: Se agrega para imprimir log
+            
+
+            JsonMaxTransit jsonMaxTransit = new JsonMaxTransit("REQUEST", Collections.singletonList(translatorRes));
+            
+            
+         // TODO: Se agrega para imprimir log
             MaxTransitRequest maxTransitRequest = MaxTransitRequest.builder()
                     .topic("HONDA_ORDER_REQUEST")
                     .source("hdm")
-                    .details(Collections.singletonList(jsonMTOC.toJson()))
+                    .details(Collections.singletonList(jsonMaxTransit.getDetails().toString()))
                     .build();
 
-            log.info("MaxTransit new Request: {}", maxTransitRequest);
-
-            JsonMaxTransit jsonMaxTransit = new JsonMaxTransit("REQUEST", Collections.singletonList(translatorRes));
-            log.info("Request JsonMaxTransit: {}", jsonMaxTransit.toJson());
+            log.info("Requesthdm:: MaxTransit Request V2: {}", maxTransitRequest.toString());
+            
+            //log.info("Requesthdm:: Maxtransit Request V1: {}", jsonMaxTransit.getDetails().toString());
 
             List<JsonResponse> jsonResponseList = maxTransitService.sendRequest(jsonMaxTransit);
 
