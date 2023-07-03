@@ -29,42 +29,45 @@ public class RequestHdmGmService {
     @Scheduled(fixedDelayString = "${timelapse}", timeUnit = TimeUnit.MINUTES)
     public void launchProcess() {
         log.info("RequestHdmGm:: Process Start");
-        log.debug(">>> finding fixed orders");
 
         List<AfeFixedOrder> fixedOrderList = afeService.findFixedOrders();
 
         for (AfeFixedOrder fixedOrder : fixedOrderList) {
-            log.debug(">>> finding model-color");
             AfeModelColor modelColor = afeService.findModelColor(fixedOrder);
+
             if (modelColor == null) continue;
 
-            log.debug(">>> finding color");
             AfeColor color = afeService.findColor(modelColor);
             if (color == null) continue;
 
-            log.debug(">>> finding model");
             AfeModel model = afeService.findModel(modelColor);
             if (model == null) continue;
 
-            log.debug(">>> finding model-type");
             AfeModelType modelType = afeService.findModelType(model);
             if (modelType == null) continue;
 
-            log.debug(">>> sending jsonMTOC");
             JsonMTOC jsonMTOC = new JsonMTOC(model.getCode(), modelType.getModelType(), "", color.getCode());
+            log.info("Request JsonMTOC: {}", jsonMTOC.toJson());
             String translatorRes = translatorService.sendRequest(jsonMTOC);
+
             if (!StringUtils.hasText(translatorRes)) continue;
 
+            // TODO: Se agrega para imprimir log
+            MaxTransitRequest maxTransitRequest = MaxTransitRequest.builder()
+                    .topic("HONDA_ORDER_REQUEST")
+                    .source("hdm")
+                    .details(Collections.singletonList(jsonMTOC.toJson()))
+                    .build();
 
-            log.debug(">>> sending jsonMaxTransit");
+            log.info("MaxTransit new Request: {}", maxTransitRequest);
+
             JsonMaxTransit jsonMaxTransit = new JsonMaxTransit("REQUEST", Collections.singletonList(translatorRes));
+            log.info("Request JsonMaxTransit: {}", jsonMaxTransit.toJson());
+
             List<JsonResponse> jsonResponseList = maxTransitService.sendRequest(jsonMaxTransit);
 
             if (!jsonResponseList.isEmpty()) {
-                log.debug(">>> updating fixed order");
                 afeService.updateFixedOrder(fixedOrder);
-
-                log.info("RequestHdmGm:: fixed order processed: {}", fixedOrder);
             }
         }
 

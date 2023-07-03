@@ -2,13 +2,15 @@ package com.honda.olympus.ms.requesthdm_gm.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JsonMTOC {
+@EqualsAndHashCode(callSuper = true)
+public class JsonMTOC extends JsonTransform {
 
     private String hondaModel;
     private String hondaType;

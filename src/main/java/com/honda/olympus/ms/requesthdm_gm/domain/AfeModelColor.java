@@ -6,16 +6,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AfeModelColor 
+public class AfeModelColor
 {
-	
+
 	private Integer modelId;
 	private Integer colorId;
-	
-	
+
+
 	public AfeModelColor(Integer modelId, Integer colorId) {
 		this.modelId = modelId;
-		this.colorId = colorId; 
+		this.colorId = colorId;
 	}
-	
+
 }

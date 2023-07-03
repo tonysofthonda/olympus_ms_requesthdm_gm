@@ -1,17 +1,18 @@
 package com.honda.olympus.ms.requesthdm_gm.domain;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JsonMaxTransit 
-{
-	private String request;
-	private List<String> details;
+@EqualsAndHashCode(callSuper = true)
+public class JsonMaxTransit extends JsonTransform {
+    private String request;
+    private List<String> details;
 }
