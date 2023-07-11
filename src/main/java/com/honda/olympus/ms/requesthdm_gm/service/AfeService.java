@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.honda.olympus.ms.requesthdm_gm.domain.AfeAction;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeColor;
+import com.honda.olympus.ms.requesthdm_gm.domain.AfeDivision;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeFixedOrder;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeModel;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeModelColor;
@@ -52,7 +54,9 @@ public class AfeService
 			AfeModelColor afeModelColor = afeRepository.findModelColor(fixedOrder);
 
 			if (afeModelColor == null) {
+				
 				logEvent( eventHandler.findModelColorError(fixedOrder) );
+				notificationEvent(eventHandler.saveMaxtransitError());
 			}
 			return afeModelColor;
 		} 
@@ -67,7 +71,9 @@ public class AfeService
 		try {
 			AfeColor afeColor = afeRepository.findColor(modelColor);
 			if (afeColor == null) {
-				logEvent( eventHandler.findColorError(modelColor) );
+	
+				logEvent( eventHandler.findColorError(modelColor));
+				notificationEvent(eventHandler.saveMaxtransitError());
 			}
 			return afeColor;
 		}
@@ -83,6 +89,7 @@ public class AfeService
 			AfeModel afeModel = afeRepository.findModel(modelColor);
 			if (afeModel == null) {
 				logEvent( eventHandler.findModelError(modelColor) );
+				notificationEvent(eventHandler.saveMaxtransitError());
 			}
 			return afeModel;
 		}
@@ -98,6 +105,8 @@ public class AfeService
 			AfeModelType afeModelType = afeRepository.findModelType(model); 
 			if (afeModelType == null) {
 				logEvent( eventHandler.findModelTypeError(model) );
+				notificationEvent(eventHandler.saveMaxtransitError());
+				
 			}
 			return afeModelType;
 		}
@@ -108,9 +117,43 @@ public class AfeService
 	}
 	
 	
-	public void updateFixedOrder(AfeFixedOrder fixedOrder) {
+	public AfeAction findAction(AfeFixedOrder fixedOrder) {
+		try { 
+			AfeAction afeModelType = afeRepository.findAction(fixedOrder); 
+			if (afeModelType == null) {
+				logEvent( eventHandler.findActionError(fixedOrder) );
+				notificationEvent(eventHandler.saveMaxtransitError());
+				
+			}
+			return afeModelType;
+		}
+		catch (DataAccessException exception) {
+			handleDataAccessException(exception);
+			return null;
+		}
+	}
+	
+	
+	public AfeDivision findDivision(AfeModel model) {
+		try { 
+			AfeDivision afeModelType = afeRepository.findDivision(model); 
+			if (afeModelType == null) {
+				logEvent( eventHandler.findDivisionError(model) );
+				notificationEvent(eventHandler.saveMaxtransitError());
+				
+			}
+			return afeModelType;
+		}
+		catch (DataAccessException exception) {
+			handleDataAccessException(exception);
+			return null;
+		}
+	}
+	
+	
+	public void updateFixedOrder(AfeFixedOrder fixedOrder,String obs) {
 		try {
-			int rowsAffected = afeRepository.updateFixedOrder(fixedOrder);
+			int rowsAffected = afeRepository.updateFixedOrder(fixedOrder,obs);
 			if (rowsAffected == 1) {
 				Event event = eventHandler.updateFixedOrderOk(fixedOrder);
 				logEventService.logEvent(event);
@@ -118,6 +161,26 @@ public class AfeService
 			}
 			else {
 				logEvent( eventHandler.updateFixedOrderError() );
+				notificationService.sendNotification(eventHandler.saveMaxtransitError());
+			}
+		}
+		catch (DataAccessException exception) {
+			handleDataAccessException(exception);
+		}
+	}
+	
+	
+	public void insertOrdenActionHisotory(AfeFixedOrder fixedOrder,AfeAction action,String obs) {
+		try {
+			int rowsAffected = afeRepository.insertOrderActionHistory(fixedOrder, action, obs);
+			if (rowsAffected == 1) {
+				Event event = eventHandler.updateFixedOrderOk(fixedOrder);
+				logEventService.logEvent(event);
+				notificationService.sendNotification(event);
+			}
+			else {
+				logEvent( eventHandler.updateFixedOrderError() );
+				notificationService.sendNotification(eventHandler.saveMaxtransitError());
 			}
 		}
 		catch (DataAccessException exception) {
@@ -131,12 +194,17 @@ public class AfeService
 		log.error("### {}", event.getMsg());
 	}
 	
+	private void notificationEvent(Event event) {
+		notificationService.sendNotification(event);
+		log.error("### {}", event.getMsg());
+	}
+	
 	
 	private void handleDataAccessException(DataAccessException exception) {
 		log.error("### Error found while connecting to DB: {}", exception);
 		Event event = eventHandler.dbConnectionError();
 		logEventService.logEvent(event);
-		notificationService.sendNotification(event);
+		notificationService.sendNotification(eventHandler.saveMaxtransitError());
 	}
 	
 }

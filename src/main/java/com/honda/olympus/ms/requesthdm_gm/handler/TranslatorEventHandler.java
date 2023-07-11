@@ -23,6 +23,8 @@ public class TranslatorEventHandler
 	
 	private static final String EMPTY = "";
 	
+	private static final String TRANSLATOR_ERROR = "102 Error al gurdar en MaxTransit. La orden de producción no se guardo correctamente en Maxtransit debido a que la respuesta MTOC RPO TRANSLATOR retorno error";
+	
 	
 	@Autowired private Properties props;
 	@Autowired private Service service;
@@ -45,6 +47,10 @@ public class TranslatorEventHandler
 	
 	public Event noConnectionError() {
 		return new Event(service.getServiceName(), Status._FAIL, MSG_NO_CONN_ERROR, EMPTY);
+	}
+	
+	public Event translatorError() {
+		return new Event(service.getServiceName(), Status._FAIL, TRANSLATOR_ERROR, EMPTY);
 	}
 
 }

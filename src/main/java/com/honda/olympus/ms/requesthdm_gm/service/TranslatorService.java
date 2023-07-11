@@ -11,6 +11,7 @@ import org.springframework.web.client.RestClientResponseException;
 import com.honda.olympus.ms.requesthdm_gm.client.TranslatorClient;
 import com.honda.olympus.ms.requesthdm_gm.domain.Event;
 import com.honda.olympus.ms.requesthdm_gm.domain.JsonMTOC;
+import com.honda.olympus.ms.requesthdm_gm.handler.AfeEventHandler;
 import com.honda.olympus.ms.requesthdm_gm.handler.TranslatorEventHandler;
 
 import lombok.Setter;
@@ -28,11 +29,13 @@ public class TranslatorService
 	
 	@Autowired 
 	private LogEventService logEventService;
+	
 	@Autowired 
 	private NotificationService notificationService;
 	
 	@Autowired
 	private TranslatorEventHandler eventHandler;
+
 	
 	
 	public String sendRequest(JsonMTOC jsonMTOC) {
@@ -40,6 +43,8 @@ public class TranslatorService
 			String response = translatorClient.sendRequest(jsonMTOC).getBody();
 			if (!StringUtils.hasText(response)) {
 				sendEvent(eventHandler.noInfoError(), null);
+				notificationEvent(eventHandler.translatorError());
+				
 				return null;
 			}
 			return response;
@@ -48,13 +53,16 @@ public class TranslatorService
 		{
 			if (exception.getCause() instanceof SocketTimeoutException) {
 				sendEvent(eventHandler.timeoutError(), null);
+				notificationEvent(eventHandler.translatorError());
 				return null;
 			}
 			sendEvent(eventHandler.noConnectionError(), exception);
+			notificationEvent(eventHandler.translatorError());
 			return null;
 		}
 		catch (RestClientResponseException exception) {
 			sendEvent(eventHandler.httpStatusError(exception.getResponseBodyAsString()), null);
+			notificationEvent(eventHandler.translatorError());
 			return null;
 		}
 	}
@@ -64,6 +72,11 @@ public class TranslatorService
 		log.error("### {}", event.getMsg(), exception);
 		logEventService.logEvent(event);
 		notificationService.sendNotification(event);
+	}
+	
+	private void notificationEvent(Event event) {
+		notificationService.sendNotification(event);
+		log.error("### {}", event.getMsg());
 	}
 	
 }

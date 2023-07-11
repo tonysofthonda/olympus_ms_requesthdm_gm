@@ -8,13 +8,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.honda.olympus.ms.requesthdm_gm.domain.AfeAction;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeColor;
+import com.honda.olympus.ms.requesthdm_gm.domain.AfeDivision;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeFixedOrder;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeModel;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeModelColor;
 import com.honda.olympus.ms.requesthdm_gm.domain.AfeModelType;
 
 import static com.honda.olympus.ms.requesthdm_gm.util.SqlUtil.getInt;
+import static com.honda.olympus.ms.requesthdm_gm.util.SqlUtil.getLong;
 
 
 @Repository
@@ -37,6 +40,12 @@ public class AfeRepository
 	@Value("${findModelType}")
 	private String findModelTypeSQL; 
 	
+	@Value("${findActionSQL}")
+	private String findActionSQL; 
+	
+	@Value("${findDivisionSQL}")
+	private String findDivisionSQL; 
+	
 	@Value("${updateFixedOrder}")
 	private String updateFixedOrderSQL; 
 	
@@ -55,7 +64,7 @@ public class AfeRepository
 				
 				fixedOrder.setId( getInt(rs, "id") );
 				fixedOrder.setModelColorId( getInt(rs, "modelColorId") );
-				
+				fixedOrder.setActionId( getLong(rs, "actionId") );
 				return fixedOrder;
 			});
 	}
@@ -106,7 +115,7 @@ public class AfeRepository
 				
 				model.setCode( rs.getString("code") );
 				model.setModelTypeId( getInt(rs, "modelTypeId") );
-				
+				model.setDivisionId ( getLong(rs, "divisionId") );
 				return model;
 			},
 			modelColor.getModelId());
@@ -131,8 +140,51 @@ public class AfeRepository
 	}
 	
 	
-	public int updateFixedOrder(AfeFixedOrder fixedOrder) {
-		return jdbcTemplate.update(updateFixedOrderSQL, fixedOrder.getId());
+	public AfeAction findAction(AfeFixedOrder fixedOrder) 
+	{
+		List<AfeAction> list = jdbcTemplate.query(
+				findActionSQL, 
+			(rs, rowNum) -> 
+			{
+				AfeAction afeAction = new AfeAction();
+				afeAction.setId( rs.getLong("id") );
+				afeAction.setAction ( rs.getString("action") );
+				return afeAction;
+			}, 
+			fixedOrder.getActionId());
+		
+		return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
+	public AfeDivision findDivision(AfeModel model) 
+	{
+		List<AfeDivision> list = jdbcTemplate.query(
+				findDivisionSQL, 
+			(rs, rowNum) -> 
+			{
+				AfeDivision afeDivision = new AfeDivision();
+				afeDivision.setId( rs.getLong("id") );
+				afeDivision.setAbbreviation ( rs.getString("abbreviation") );
+				return afeDivision;
+			}, 
+			model.getDivisionId());
+		
+		return list.isEmpty() ? null : list.get(0);
+	}
+	
+	
+	public int updateFixedOrder(AfeFixedOrder fixedOrder,String obs) {
+		return jdbcTemplate.update(updateFixedOrderSQL, obs, fixedOrder.getId());
+	}
+	
+	
+	public int insertOrderActionHistory(AfeFixedOrder fixedOrder,AfeAction action,String obs) {
+		return jdbcTemplate.update(updateFixedOrderSQL, 
+				                   action.getId(),
+				                   fixedOrder.getId(),
+				                   fixedOrder.getModelColorId(),
+				                   fixedOrder.getFlagGm(),obs);
 	}
 	
 }

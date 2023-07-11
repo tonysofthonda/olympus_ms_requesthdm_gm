@@ -44,13 +44,19 @@ public class MaxTransitService
 		catch (ResourceAccessException exception) {
 			if (exception.getCause() instanceof SocketTimeoutException) {
 				sendEvent(eventHandler.timeoutError(), null);
+				notificationEvent(eventHandler.maxTransitError());
+				
 				return new ArrayList<>();
 			}
 			sendEvent(eventHandler.noConnectionError(), exception);
+			notificationEvent(eventHandler.maxTransitError());
+			
 			return new ArrayList<>();
 		}
 		catch (HttpClientErrorException exception) {
 			sendEvent(eventHandler.httpStatusError(exception.getResponseBodyAsString()), null);
+			notificationEvent(eventHandler.maxTransitError());
+			
 			return new ArrayList<>();
 		}
 	}
@@ -60,6 +66,11 @@ public class MaxTransitService
 		log.error("### {}", event.getMsg(), exception);
 		logEventService.logEvent(event);
 		notificationService.sendNotification(event);
+	}
+	
+	private void notificationEvent(Event event) {
+		notificationService.sendNotification(event);
+		log.error("### {}", event.getMsg());
 	}
 	
 }

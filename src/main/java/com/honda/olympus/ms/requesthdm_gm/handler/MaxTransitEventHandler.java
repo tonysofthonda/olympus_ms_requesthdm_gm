@@ -20,6 +20,8 @@ public class MaxTransitEventHandler
 	private static final String MSG_HTTP_STATUS_ERROR = "La API MAX TRANSIT retorno un error: %s";
 	private static final String MSG_NO_CONN_ERROR = "Sin conexión a la API MAX TRANSIT";
 	
+	private static final String MAXTRANSIT_ERROR = "102 Error al guardar en MaxTRansit. La orde de producción {} no se guardo correctamente. El API de MAX TRANSIT no responde.";
+	
 	private static final String EMPTY = "";
 	
 	
@@ -40,5 +42,12 @@ public class MaxTransitEventHandler
 	public Event noConnectionError() {
 		return new Event(service.getServiceName(), Status._FAIL, MSG_NO_CONN_ERROR, EMPTY);
 	}
+	
+	public Event maxTransitError() {
+		return new Event(service.getServiceName(), Status._FAIL, MAXTRANSIT_ERROR, EMPTY);
+	}
+	
+	
+	
 	
 }

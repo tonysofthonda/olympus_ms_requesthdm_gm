@@ -16,11 +16,17 @@ public class Query
 	private final String findModelKEY = "findModel";
 	private final String findModelTypeKEY = "findModelType";
 	private final String updateFixedOrderKEY = "updateFixedOrder";
+	private final String findActionKEY = "findActionSQL";
+	private final String findDivisionKEY = "findDivisionSQL";
+	private final String insertOrderHistoryKEY = "insertOrderActionHistory";
 	
 	@Value("${findFixedOrders}") private String findFixedOrders;
 	@Value("${findModelColor}")  private String findModelColor;
 	@Value("${findColor}") private String findColor;
 	@Value("${findModel}") private String findModel;
 	@Value("${findModelType}") private String findModelType;
-	@Value("${updateFixedOrder}") private String updateFixedOrder;	
+	@Value("${findActionSQL}") private String findAction;
+	@Value("${findDivisionSQL}") private String findDivision;
+	@Value("${updateFixedOrder}") private String updateFixedOrder;
+	@Value("${insertOrderActionHistory}") private String insertOrderActionHistory;	
 }
